@@ -25,10 +25,14 @@ namespace BookStore.Controllers
         //[Route ("test/{categoryId:int}/{page:int}")]
         public ViewResult List(int categoryId, int page = 1)
         {
+            //var source = productRepository.Products
+            //   .Where(p => p.Categories.Any(x => x.Id == categoryId));
+
+            var source = productRepository.GetProductsByCategoryId(categoryId);
+
             ProductListViewModel model = new ProductListViewModel
             {
-                Products = productRepository.Products
-                .Where(p => p.Categories.Any(x => x.Id == categoryId))
+                Products = source
                 .OrderBy(p => p.Name)
                 .Skip((page - 1) * PageSize)
                 .Take(PageSize),
@@ -36,9 +40,10 @@ namespace BookStore.Controllers
                 {
                     CurrentPage = page,
                     ItemsPerPage = PageSize,
-                    TotalItems = productRepository.Products
-                    .Where(x => x.Categories
-                        .All(c => c.Id == categoryId)).Count()
+                    TotalItems = source 
+                    //productRepository.Products
+                    //            .Where(p => p.Categories.Any(x => x.Id == categoryId))
+                                .Count()
                 },
                 Category = CurrentCategory
             };

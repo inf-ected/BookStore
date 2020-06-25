@@ -19,6 +19,8 @@ namespace BookStore.Domain.Implementation.Repo
             }
         }
 
+      
+
         public void DeleteProduct(Product product)
         {
             var productToDelete = context.Products.Find(product.Id);
@@ -27,6 +29,11 @@ namespace BookStore.Domain.Implementation.Repo
                 context.Products.Remove(productToDelete);
                 context.SaveChanges();
             }
+        }
+
+        public IEnumerable<Product> GetProductsByCategoryId(int catId) {
+
+            return context.Products.Where(p => p.Categories.Any(x => x.Id == catId));
         }
 
         public Category GetPrincipalCategory(Product product)

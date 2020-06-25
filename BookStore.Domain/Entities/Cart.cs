@@ -12,6 +12,11 @@ namespace BookStore.Domain.Entities
         public int Id { get; set; }
         private List<CartLine> _linesCollection = new List<CartLine>();
 
+        public Cart()
+        {
+            _linesCollection = new List<CartLine>();
+        }
+
         public IEnumerable<CartLine> Lines
         {
             get

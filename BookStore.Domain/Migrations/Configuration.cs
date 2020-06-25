@@ -59,7 +59,7 @@ namespace BookStore.Domain.Migrations
 
             var product1 = new Product
             {
-                //Id = Guid.NewGuid(),
+                Id = Guid.NewGuid(),
                 Name = "Jizni Ilia Ilich",
                 Categories = new List<Category> { c1, c2 },
                 Description = "Life of Ilia Ilich",

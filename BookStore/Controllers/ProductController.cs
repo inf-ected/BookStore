@@ -22,6 +22,7 @@ namespace BookStore.Controllers
         }
 
         // GET: Product
+        //[Route ("test/{categoryId:int}/{page:int}")]
         public ViewResult List(int categoryId, int page = 1)
         {
             ProductListViewModel model = new ProductListViewModel

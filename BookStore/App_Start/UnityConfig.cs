@@ -1,3 +1,4 @@
+using BookStore.Domain.Implementation;
 using BookStore.Domain.Implementation.Repo;
 using BookStore.Domain.Interfaces;
 using System;
@@ -52,6 +53,7 @@ namespace BookStore
 
             // TODO: Register your type's mappings here.
              container.RegisterType<IProductRepository, ProductRepository>();
+            container.RegisterType<IOrderProcessor, EmailOrderProcessor>();
         }
     }
 }

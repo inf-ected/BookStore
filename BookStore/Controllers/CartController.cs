@@ -23,25 +23,48 @@ namespace BookStore.Controllers
         // GET: Cart
         public ActionResult Index(Cart cart, string returnUrl)
         {
-            return View(new CartIndexViewModel { Cart = cart, ReturnUrl = returnUrl });
+            return View(new CartIndexViewModel
+            { 
+                Cart = HttpContext.Session["Cart"] as Cart, 
+                ReturnUrl = returnUrl 
+            });
         }
         [HttpPost]
         public RedirectToRouteResult AddToCart(Cart cart, Guid Id, string returnUrl)
         {
             Product product = _productRepository.Products.FirstOrDefault(x => x.Id == Id);
+            cart = HttpContext.Session["Cart"] as Cart;
+            if (cart == null)
+                cart = new Cart();
+
+            //cart = HttpContext.Session["Cart"] as Cart ?? new Cart();
+
+
+
             if (product != null)
             {
                 cart.AddItem(product, 1);
+                HttpContext.Session["Cart"] = cart;
             }
             return RedirectToAction("Index", new { returnUrl });
         }
         [HttpPost]
         public RedirectToRouteResult RemoveFromCart(Cart cart, Guid Id, string returnUrl)
         {
+            if (Id == null || Id == Guid.Empty) 
+            {
+                ModelState.AddModelError("","Product not found!");
+                return RedirectToAction("Index", new { returnUrl });
+            }
+            
+            cart = HttpContext.Session["Cart"] as Cart ?? new Cart();
+
             Product product = _productRepository.Products.FirstOrDefault(x => x.Id == Id);
             if (product != null)
             {
                 cart.RemoveItem(product);
+                HttpContext.Session["Cart"] = cart;
+
             }
             return RedirectToAction("Index", new { returnUrl });
         }
@@ -56,6 +79,8 @@ namespace BookStore.Controllers
         [HttpPost]
         public ViewResult CheckOut(Cart cart, ShippingDetail shippingDetail)
         {
+            cart = HttpContext.Session["Cart"] as Cart;
+
             if (cart.Lines.Count() == 0)
             {
                 ModelState.AddModelError("", "Sorry, your cartis empty!");
@@ -64,7 +89,7 @@ namespace BookStore.Controllers
             {
                 _orderProcessor.ProcessOrder(cart, shippingDetail);
                 cart.Clear();
-                //HttpContext.Session["Cart"] = null;
+                HttpContext.Session["Cart"] = null;
                 return View("Complete");
             }
             else

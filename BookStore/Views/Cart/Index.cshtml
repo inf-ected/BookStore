@@ -6,9 +6,12 @@
 
 <h2>Your CART</h2>
 
-<p>
+@*<p>
     @Html.ActionLink("Create New", "Create")
-</p>
+</p>*@
+
+<div class="text-danger">@ViewBag.ProductError</div>
+
 <table class="table" id="cartTable">
     <thead>
         <tr>
@@ -35,12 +38,12 @@
                 @product.Product.Price
             </td>
             <td>
-                @product.Product.Price*@product.Quantity.ToString("c")
+                @((product.Product.Price*product.Quantity).ToString("c"))
             </td>
             <td>
                 @using (Html.BeginForm("RemoveFromCart", "Cart", "POST"))
                 {
-                    @Html.Hidden("productId",product.Product.Id)
+                    @Html.Hidden("Id",product.Product.Id)
                     @Html.HiddenFor(x => x.ReturnUrl)
                     <input class="btn btn-warning btn-sm" type="submit" value="Remove"/>
                 }

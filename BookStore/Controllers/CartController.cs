@@ -1,6 +1,7 @@
 ﻿using BookStore.Domain.Entities;
 using BookStore.Domain.Interfaces;
 using BookStore.Models;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,21 +13,23 @@ namespace BookStore.Controllers
     public class CartController : Controller
     {
         private IProductRepository _productRepository;
+        private IOrderRepository _orderRepository;
         private IOrderProcessor _orderProcessor;
 
-        public CartController(IProductRepository productRepository, IOrderProcessor orderProcessor)
+        public CartController(IProductRepository productRepository, IOrderProcessor orderProcessor, IOrderRepository orderRepository)
         {
             _productRepository = productRepository;
             _orderProcessor = orderProcessor;
+            _orderRepository = orderRepository;
         }
 
         // GET: Cart
         public ActionResult Index(Cart cart, string returnUrl)
         {
             return View(new CartIndexViewModel
-            { 
-                Cart = HttpContext.Session["Cart"] as Cart, 
-                ReturnUrl = returnUrl 
+            {
+                Cart = HttpContext.Session["Cart"] as Cart,
+                ReturnUrl = returnUrl
             });
         }
         [HttpPost]
@@ -51,12 +54,12 @@ namespace BookStore.Controllers
         [HttpPost]
         public RedirectToRouteResult RemoveFromCart(Cart cart, Guid Id, string returnUrl)
         {
-            if (Id == null || Id == Guid.Empty) 
+            if (Id == null || Id == Guid.Empty)
             {
-                ModelState.AddModelError("","Product not found!");
+                ModelState.AddModelError("", "Product not found!");
                 return RedirectToAction("Index", new { returnUrl });
             }
-            
+
             cart = HttpContext.Session["Cart"] as Cart ?? new Cart();
 
             Product product = _productRepository.Products.FirstOrDefault(x => x.Id == Id);
@@ -74,7 +77,7 @@ namespace BookStore.Controllers
         }
         public ViewResult CheckOut()
         {
-            return View(new ShippingDetail());
+            return View(new ShippingDetail() { OrderId = _orderRepository.GetLastOrder() });
         }
         [HttpPost]
         public ViewResult CheckOut(Cart cart, ShippingDetail shippingDetail)
@@ -83,10 +86,28 @@ namespace BookStore.Controllers
 
             if (cart.Lines.Count() == 0)
             {
-                ModelState.AddModelError("", "Sorry, your cartis empty!");
+                ModelState.AddModelError("", "Sorry, your cart is empty!");
             }
             if (ModelState.IsValid)
             {
+                //save cart 
+
+                var order = new Order {
+                    Id = _orderRepository.GetLastOrder(),
+                    //Cart=cart,
+                    CartId = cart.Id,
+                    //Client= null,
+                    //ClientId = null,
+                    Date = DateTime.UtcNow
+                };
+                if (User.Identity.IsAuthenticated)
+                    order.ClientId=Convert.ToInt32(User.Identity.GetUserId());
+
+                _orderRepository.SaveOrder(order);
+
+
+                //save client ???
+
                 _orderProcessor.ProcessOrder(cart, shippingDetail);
                 cart.Clear();
                 HttpContext.Session["Cart"] = null;

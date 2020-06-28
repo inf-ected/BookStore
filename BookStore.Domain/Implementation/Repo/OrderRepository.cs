@@ -39,5 +39,13 @@ namespace BookStore.Domain.Implementation.Repo
                 _context.SaveChanges();
             }
         }
+        public void SaveCart(Cart cart)
+        {
+            if (cart != null)
+            {
+                // ну и как тут достучаться до Cart ?
+                throw new NotImplementedException("not empl Cart Save");
+            }
+        }
     }
 }

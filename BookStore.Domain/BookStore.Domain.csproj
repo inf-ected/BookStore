@@ -189,8 +189,10 @@
     <Compile Include="Entities\ShippingDetail.cs" />
     <Compile Include="Implementation\ApplicationDbContext.cs" />
     <Compile Include="Implementation\EmailOrderProcessor.cs" />
+    <Compile Include="Implementation\Repo\CartRepository.cs" />
     <Compile Include="Implementation\Repo\OrderRepository.cs" />
     <Compile Include="Implementation\Repo\ProductRepository.cs" />
+    <Compile Include="Interfaces\ICartRepository.cs" />
     <Compile Include="Interfaces\IOrderProcessor.cs" />
     <Compile Include="Interfaces\IOrderRepository.cs" />
     <Compile Include="Interfaces\IProductRepository.cs" />

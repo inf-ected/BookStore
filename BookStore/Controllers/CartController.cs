@@ -83,31 +83,23 @@ namespace BookStore.Controllers
         public ViewResult CheckOut(Cart cart, ShippingDetail shippingDetail)
         {
             cart = HttpContext.Session["Cart"] as Cart;
-
             if (cart.Lines.Count() == 0)
-            {
                 ModelState.AddModelError("", "Sorry, your cart is empty!");
-            }
             if (ModelState.IsValid)
             {
-                //save cart 
-
+                //save cart зачем ??? унас даже дбСета нет для него 
                 var order = new Order {
                     Id = _orderRepository.GetLastOrder(),
-                    //Cart=cart,
+                    Cart=cart,
                     CartId = cart.Id,
-                    //Client= null,
-                    //ClientId = null,
                     Date = DateTime.UtcNow
                 };
                 if (User.Identity.IsAuthenticated)
-                    order.ClientId=Convert.ToInt32(User.Identity.GetUserId());
-
+                { 
+                    // order.ClientId = Convert.ToInt32(User.Identity.GetUserId()); // но так это ИД юзера а не клиента ?
+                    // order.Client = System.Web.HttpContext.Current.User.Identity.Name;  // как получить инстанс залогиненого юзера ? 
+                }
                 _orderRepository.SaveOrder(order);
-
-
-                //save client ???
-
                 _orderProcessor.ProcessOrder(cart, shippingDetail);
                 cart.Clear();
                 HttpContext.Session["Cart"] = null;

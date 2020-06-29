@@ -10,7 +10,7 @@ namespace BookStore.Domain.Implementation.Repo
 {
    public class OrderRepository : IOrderRepository
     {
-        private ApplicationDbContext _context = new ApplicationDbContext();
+        private ApplicationDbContext _context =  new ApplicationDbContext();
         public IEnumerable<Order> Orders
         {
             get

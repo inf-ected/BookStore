@@ -42,7 +42,7 @@ namespace BookStore.Controllers
 
             //cart = HttpContext.Session["Cart"] as Cart ?? new Cart();
 
-
+            
 
             if (product != null)
             {
@@ -88,16 +88,24 @@ namespace BookStore.Controllers
             if (ModelState.IsValid)
             {
                 //save cart зачем ??? унас даже дбСета нет для него 
-                var order = new Order {
+                var order = new Order
+                {
                     Id = _orderRepository.GetLastOrder(),
-                    Cart=cart,
+                    Cart = cart,
                     CartId = cart.Id,
                     Date = DateTime.UtcNow
                 };
                 if (User.Identity.IsAuthenticated)
-                { 
-                    // order.ClientId = Convert.ToInt32(User.Identity.GetUserId()); // но так это ИД юзера а не клиента ?
-                    // order.Client = System.Web.HttpContext.Current.User.Identity.Name;  // как получить инстанс залогиненого юзера ? 
+                {
+                    Client client = new Client
+                    {
+                        ApplicationUserId = Convert.ToInt32(User.Identity.GetUserId()),
+                        Mobile = "",
+                        Name = System.Web.HttpContext.Current.User.Identity.Name
+                    };
+                    //client.Save();
+                     order.ClientId = client.Id; // но так это ИД юзера а не клиента ?
+                   
                 }
                 _orderRepository.SaveOrder(order);
                 _orderProcessor.ProcessOrder(cart, shippingDetail);

@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace BookStore.Domain.Implementation.Repo
 {
-    public class GenericReposetory<TEntity> where TEntity : class
+    public class GenericRepository<TEntity> where TEntity : class
     {
         internal ApplicationDbContext _context;
         internal DbSet<TEntity> _dbSet;
 
-        public GenericReposetory(ApplicationDbContext applicationDbContext)
+        public GenericRepository(ApplicationDbContext applicationDbContext)
         {
             _context = applicationDbContext;
             _dbSet = _context.Set<TEntity>();
@@ -77,6 +77,9 @@ namespace BookStore.Domain.Implementation.Repo
             _dbSet.RemoveRange(entities);
         }
 
-
+        public virtual TEntity FirstOrDefault()
+        {
+            return _dbSet.FirstOrDefault();
+        }
     }
 }

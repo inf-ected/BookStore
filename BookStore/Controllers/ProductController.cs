@@ -1,4 +1,6 @@
 ﻿using BookStore.Domain.Entities;
+using BookStore.Domain.Implementation;
+using BookStore.Domain.Implementation.Repo;
 using BookStore.Domain.Interfaces;
 using BookStore.Models;
 using System;
@@ -11,14 +13,19 @@ namespace BookStore.Controllers
 {
     public class ProductController : Controller
     {
-        private IProductRepository productRepository;
+        //private IProductRepository productRepository;
+        private UnitOfWork<Product> unitOfWork;
+        private UnitOfWork<Category> unitOfCategory;
         public int PageSize = 5;
         public Category CurrentCategory { get; set; }
 
-        public ProductController(IProductRepository repo)
+        public ProductController() //IProductRepository repo)
         {
-            this.productRepository = repo;
-            CurrentCategory = repo.GetPrincipalCategory(null);
+            //this.productRepository = repo;
+
+            unitOfWork = new UnitOfWork<Product>(new GenericRepository<Product>(new ApplicationDbContext()));
+            unitOfCategory = new UnitOfWork<Category>(new GenericRepository<Category>(new ApplicationDbContext()));
+            CurrentCategory = unitOfCategory.GenericRepository.FirstOrDefault();//repo.GetPrincipalCategory(null);
         }
 
         // GET: Product
@@ -28,7 +35,9 @@ namespace BookStore.Controllers
             //var source = productRepository.Products
             //   .Where(p => p.Categories.Any(x => x.Id == categoryId));
 
-            var source = productRepository.GetProductsByCategoryId(categoryId);
+            //var source = productRepository.GetProductsByCategoryId(categoryId);
+
+            var source = unitOfWork.GenericRepository.Get();// null, null, "Category");
 
             ProductListViewModel model = new ProductListViewModel
             {
@@ -40,10 +49,11 @@ namespace BookStore.Controllers
                 {
                     CurrentPage = page,
                     ItemsPerPage = PageSize,
-                    TotalItems = source 
+                    TotalItems = unitOfWork.GenericRepository.Get(x => x.Categories.Any(y => y.Id == categoryId))
+                    //source 
                     //productRepository.Products
                     //            .Where(p => p.Categories.Any(x => x.Id == categoryId))
-                                .Count()
+                    .Count()
                 },
                 Category = CurrentCategory
             };

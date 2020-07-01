@@ -1,5 +1,6 @@
 ﻿using BookStore.Domain.Entities;
 using BookStore.Domain.Interfaces;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,8 +59,9 @@ namespace BookStore.Domain.Implementation
                     .AppendLine(shippingDetail.Zip);
 
                 MailMessage mailMessage = new MailMessage(
+                    
                      emailSettings.MailFromAddress,
-                     cart.Client?.ApplicationUser.Email,
+                     cart.Client?.ApplicationUser.Email ?? emailSettings.MailToAddress,
                      "You made a new order on BookStore.com",
                      body.ToString()
                     );
@@ -76,7 +78,7 @@ namespace BookStore.Domain.Implementation
 
     public class EmailSettings
     {
-        public string MailToAddress = "";
+        public string MailToAddress = "toClient@mail.com";
         public string MailFromAddress = "BookStore@yopmail.com";
         public bool UseSsl = true;
         public string UserName = "MyUsername";

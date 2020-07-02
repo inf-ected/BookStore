@@ -15,12 +15,17 @@ namespace BookStore.Controllers
         private IProductRepository _productRepository;
         private IOrderRepository _orderRepository;
         private IOrderProcessor _orderProcessor;
-
-        public CartController(IProductRepository productRepository, IOrderProcessor orderProcessor, IOrderRepository orderRepository)
+        private ICartRepository _cartRepository;
+        public CartController(
+            IProductRepository productRepository, 
+            IOrderProcessor orderProcessor, 
+            IOrderRepository orderRepository,
+            ICartRepository cartRepository)
         {
             _productRepository = productRepository;
             _orderProcessor = orderProcessor;
             _orderRepository = orderRepository;
+            _cartRepository = cartRepository;
         }
 
         // GET: Cart
@@ -38,7 +43,9 @@ namespace BookStore.Controllers
             Product product = _productRepository.Products.FirstOrDefault(x => x.Id == Id);
             cart = HttpContext.Session["Cart"] as Cart;
             if (cart == null)
-                cart = new Cart();
+            { cart = new Cart();
+              // _cartRepository.SaveCart(cart);
+            }
 
             //cart = HttpContext.Session["Cart"] as Cart ?? new Cart();
 
@@ -46,7 +53,8 @@ namespace BookStore.Controllers
 
             if (product != null)
             {
-                cart.AddItem(product, 1);
+                _cartRepository.AddItem(cart, product, 1);
+                //cart.AddItem(product, 1);
                 HttpContext.Session["Cart"] = cart;
             }
             return RedirectToAction("Index", new { returnUrl });
@@ -65,7 +73,8 @@ namespace BookStore.Controllers
             Product product = _productRepository.Products.FirstOrDefault(x => x.Id == Id);
             if (product != null)
             {
-                cart.RemoveItem(product);
+                _cartRepository.RemoveItem(cart, product);
+                //cart.RemoveItem(product);
                 HttpContext.Session["Cart"] = cart;
 
             }
@@ -83,7 +92,8 @@ namespace BookStore.Controllers
         public ViewResult CheckOut(Cart cart, ShippingDetail shippingDetail)
         {
             cart = HttpContext.Session["Cart"] as Cart;
-            if (cart.Lines.Count() == 0)
+
+            if (cart.LinesCollection.Count() == 0)
                 ModelState.AddModelError("", "Sorry, your cart is empty!");
             if (ModelState.IsValid)
             {
@@ -109,7 +119,8 @@ namespace BookStore.Controllers
                 }
                 _orderRepository.SaveOrder(order);
                 _orderProcessor.ProcessOrder(cart, shippingDetail);
-                cart.Clear();
+                _cartRepository.Clear(cart);
+                //cart.Clear();
                 HttpContext.Session["Cart"] = null;
                 return View("Complete");
             }

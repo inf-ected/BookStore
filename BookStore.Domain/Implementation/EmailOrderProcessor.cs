@@ -41,13 +41,13 @@ namespace BookStore.Domain.Implementation
                     .AppendLine("OrderId: " + shippingDetail.OrderId)
                     .AppendLine("##################")
                     .AppendLine("Items:");
-                foreach (var line in cart.Lines)
+                foreach (var line in cart.LinesCollection)
                 {
                     var lineTotal = line.Product.Price * line.Quantity;
                     body.AppendFormat("{0} x {1} (subTotal: {2:c}", line.Product.Name, line.Quantity, lineTotal);
                 }
 
-                body.AppendFormat("Total order value: {0:c}", cart.ComputeTotalValue())
+                body.AppendFormat("Total order value:" /*{0:c}", cart.ComputeTotalValue()*/)
                     .AppendLine("##########")
                     .AppendLine("Ship to:")
                     .AppendLine(shippingDetail.Name)

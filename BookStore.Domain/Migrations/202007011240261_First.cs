@@ -8,13 +8,19 @@ namespace BookStore.Domain.Migrations
         public override void Up()
         {
             CreateTable(
-                "dbo.Categories",
+                "dbo.CartLines",
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        Name = c.String(),
+                        Quantity = c.Int(nullable: false),
+                        Product_Id = c.Guid(),
+                        Cart_Id = c.Int(),
                     })
-                .PrimaryKey(t => t.Id);
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.Products", t => t.Product_Id)
+                .ForeignKey("dbo.Carts", t => t.Cart_Id)
+                .Index(t => t.Product_Id)
+                .Index(t => t.Cart_Id);
             
             CreateTable(
                 "dbo.Products",
@@ -24,10 +30,30 @@ namespace BookStore.Domain.Migrations
                         Name = c.String(),
                         Description = c.String(),
                         Price = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        CreatedDate = c.Int(nullable: false),
+                        CreatedDate = c.DateTime(nullable: false),
                         ExpirationDate = c.DateTime(nullable: false),
                     })
                 .PrimaryKey(t => t.Id);
+            
+            CreateTable(
+                "dbo.Categories",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Name = c.String(),
+                    })
+                .PrimaryKey(t => t.Id);
+            
+            CreateTable(
+                "dbo.Carts",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Client_Id = c.Int(),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.Clients", t => t.Client_Id)
+                .Index(t => t.Client_Id);
             
             CreateTable(
                 "dbo.Clients",
@@ -117,17 +143,6 @@ namespace BookStore.Domain.Migrations
                 .Index(t => t.ClientId);
             
             CreateTable(
-                "dbo.Carts",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        Client_Id = c.Int(),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Clients", t => t.Client_Id)
-                .Index(t => t.Client_Id);
-            
-            CreateTable(
                 "dbo.AspNetRoles",
                 c => new
                     {
@@ -156,17 +171,17 @@ namespace BookStore.Domain.Migrations
                 .Index(t => t.OrderId);
             
             CreateTable(
-                "dbo.ProductCategories",
+                "dbo.CategoryProducts",
                 c => new
                     {
-                        Product_Id = c.Guid(nullable: false),
                         Category_Id = c.Int(nullable: false),
+                        Product_Id = c.Guid(nullable: false),
                     })
-                .PrimaryKey(t => new { t.Product_Id, t.Category_Id })
-                .ForeignKey("dbo.Products", t => t.Product_Id, cascadeDelete: true)
+                .PrimaryKey(t => new { t.Category_Id, t.Product_Id })
                 .ForeignKey("dbo.Categories", t => t.Category_Id, cascadeDelete: true)
-                .Index(t => t.Product_Id)
-                .Index(t => t.Category_Id);
+                .ForeignKey("dbo.Products", t => t.Product_Id, cascadeDelete: true)
+                .Index(t => t.Category_Id)
+                .Index(t => t.Product_Id);
             
         }
         
@@ -176,18 +191,19 @@ namespace BookStore.Domain.Migrations
             DropForeignKey("dbo.AspNetUserRoles", "RoleId", "dbo.AspNetRoles");
             DropForeignKey("dbo.Orders", "ClientId", "dbo.Clients");
             DropForeignKey("dbo.Orders", "CartId", "dbo.Carts");
+            DropForeignKey("dbo.CartLines", "Cart_Id", "dbo.Carts");
             DropForeignKey("dbo.Carts", "Client_Id", "dbo.Clients");
             DropForeignKey("dbo.Clients", "ApplicationUser_Id", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserRoles", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserLogins", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserClaims", "UserId", "dbo.AspNetUsers");
-            DropForeignKey("dbo.ProductCategories", "Category_Id", "dbo.Categories");
-            DropForeignKey("dbo.ProductCategories", "Product_Id", "dbo.Products");
-            DropIndex("dbo.ProductCategories", new[] { "Category_Id" });
-            DropIndex("dbo.ProductCategories", new[] { "Product_Id" });
+            DropForeignKey("dbo.CartLines", "Product_Id", "dbo.Products");
+            DropForeignKey("dbo.CategoryProducts", "Product_Id", "dbo.Products");
+            DropForeignKey("dbo.CategoryProducts", "Category_Id", "dbo.Categories");
+            DropIndex("dbo.CategoryProducts", new[] { "Product_Id" });
+            DropIndex("dbo.CategoryProducts", new[] { "Category_Id" });
             DropIndex("dbo.ShippingDetails", new[] { "OrderId" });
             DropIndex("dbo.AspNetRoles", "RoleNameIndex");
-            DropIndex("dbo.Carts", new[] { "Client_Id" });
             DropIndex("dbo.Orders", new[] { "ClientId" });
             DropIndex("dbo.Orders", new[] { "CartId" });
             DropIndex("dbo.AspNetUserRoles", new[] { "RoleId" });
@@ -196,18 +212,22 @@ namespace BookStore.Domain.Migrations
             DropIndex("dbo.AspNetUserClaims", new[] { "UserId" });
             DropIndex("dbo.AspNetUsers", "UserNameIndex");
             DropIndex("dbo.Clients", new[] { "ApplicationUser_Id" });
-            DropTable("dbo.ProductCategories");
+            DropIndex("dbo.Carts", new[] { "Client_Id" });
+            DropIndex("dbo.CartLines", new[] { "Cart_Id" });
+            DropIndex("dbo.CartLines", new[] { "Product_Id" });
+            DropTable("dbo.CategoryProducts");
             DropTable("dbo.ShippingDetails");
             DropTable("dbo.AspNetRoles");
-            DropTable("dbo.Carts");
             DropTable("dbo.Orders");
             DropTable("dbo.AspNetUserRoles");
             DropTable("dbo.AspNetUserLogins");
             DropTable("dbo.AspNetUserClaims");
             DropTable("dbo.AspNetUsers");
             DropTable("dbo.Clients");
-            DropTable("dbo.Products");
+            DropTable("dbo.Carts");
             DropTable("dbo.Categories");
+            DropTable("dbo.Products");
+            DropTable("dbo.CartLines");
         }
     }
 }

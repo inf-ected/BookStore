@@ -199,29 +199,22 @@
     <Compile Include="Interfaces\IOrderRepository.cs" />
     <Compile Include="Interfaces\IProductRepository.cs" />
     <Compile Include="Interfaces\IUnitOfWork.cs" />
-    <Compile Include="Migrations\202006221909037_First.cs" />
-    <Compile Include="Migrations\202006221909037_First.Designer.cs">
-      <DependentUpon>202006221909037_First.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202006221941051_ProductUpdate.cs" />
-    <Compile Include="Migrations\202006221941051_ProductUpdate.Designer.cs">
-      <DependentUpon>202006221941051_ProductUpdate.cs</DependentUpon>
+    <Compile Include="Migrations\202007011240261_First.cs" />
+    <Compile Include="Migrations\202007011240261_First.Designer.cs">
+      <DependentUpon>202007011240261_First.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ApplicationUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202006221909037_First.resx">
-      <DependentUpon>202006221909037_First.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202006221941051_ProductUpdate.resx">
-      <DependentUpon>202006221941051_ProductUpdate.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202007011240261_First.resx">
+      <DependentUpon>202007011240261_First.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

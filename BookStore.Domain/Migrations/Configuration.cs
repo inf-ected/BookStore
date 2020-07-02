@@ -28,6 +28,7 @@ namespace BookStore.Domain.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
+
             var c1 = new Category
             {
                 Name = "Books"
@@ -49,9 +50,9 @@ namespace BookStore.Domain.Migrations
             {
                 Id = Guid.NewGuid(),
                 Name = "Voina i Mir",
-                Categories = new List<Category> { c1,c2},
+                Categories = new List<Category> { c1, c2 },
                 Description = "Bestseller from Lev Tolstoy",
-                CreatedDate = new DateTime(1880,10,12),
+                CreatedDate = new DateTime(1880, 10, 12),
                 ExpirationDate = new DateTime(2020, 10, 12),
                 Price = 20
             };
@@ -70,6 +71,7 @@ namespace BookStore.Domain.Migrations
             context.Products.Add(product1);
 
             context.SaveChanges();
+
         }
     }
 }

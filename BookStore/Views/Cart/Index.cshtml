@@ -2,6 +2,8 @@
 
 @{
     ViewBag.Title = "Index";
+    decimal totalPrice = 0;
+
 }
 
 <h2>Your CART</h2>
@@ -25,7 +27,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var product in Model.Cart.Lines)
+        @foreach (var product in Model.Cart.LinesCollection)
         {
         <tr>
             <td class="text-center">
@@ -38,7 +40,8 @@
                 @product.Product.Price
             </td>
             <td>
-                @((product.Product.Price*product.Quantity).ToString("c"))
+                @((product.Product.Price * product.Quantity).ToString("c"))
+                @{totalPrice += product.Product.Price * product.Quantity; }
             </td>
             <td>
                 @using (Html.BeginForm("RemoveFromCart", "Cart", "POST"))
@@ -54,7 +57,7 @@
     <tfoot>
         <tr>
             <td colspan="3" class="text-right">Total:</td>
-            <td class="text-right">@Model.Cart.ComputeTotalValue().ToString("c")</td>
+            <td class="text-right">@totalPrice.ToString("c")</td>
 
         </tr>
     </tfoot>

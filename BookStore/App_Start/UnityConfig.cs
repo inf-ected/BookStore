@@ -55,6 +55,8 @@ namespace BookStore
              container.RegisterType<IProductRepository, ProductRepository>();
             container.RegisterType<IOrderProcessor, EmailOrderProcessor>();
             container.RegisterType<IOrderRepository, OrderRepository>();
+            container.RegisterType<ICartRepository, CartRepository>();
+
         }
     }
 }

@@ -28,6 +28,10 @@ namespace BookStore.Domain.Implementation
 
         public virtual DbSet<Category> Categories { get; set; }
 
+        public virtual DbSet<Cart> Carts { get; set; }
+        public virtual DbSet<CartLine> CartLines { get; set; }
+
+
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
